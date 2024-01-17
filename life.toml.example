@@ -1,0 +1,29 @@
+[api]
+secret = ""
+
+[databases]
+daily = ""
+areas = ""
+tasks = ""
+sessions = ""
+notes = ""
+accounts = ""
+transactions = ""
+plantarium = ""
+garden = ""
+resources = ""
+
+[blocks]
+todo = ""
+
+[default_icons]
+daily = ""                                                                                                                                                                               
+areas = ""                                                                                                                                                                                          
+tasks = ""                                                                                                                                                                                          
+sessions = ""                                                                                                                                                                                     
+notes = ""                                                                                                                                                                                        
+accounts = ""                                                                                                                                                                                      
+transactions = ""
+plantarium = ""
+garden = ""
+resources = ""

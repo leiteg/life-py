@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "life"
+description = "Life command-line manager."
+license = {text = "MIT"}
+authors = [
+    {name = "Gustavo Leite", email = "gustavo.leite@ic.unicamp.br"}
+]
+readme = "README.md"
+dynamic = ["version"]
+requires-python = ">=3.9"
+dependencies = [
+    "rich",
+    "typer",
+    "notion_client",
+    "pydantic[email]",
+    "iterfzf",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "mypy"]
+doc = ["sphinx", "sphinx-book-theme"]
+
+[project.scripts]
+life = "life.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/leiteg/life-py"
+BugReports = "https://github.com/leiteg/life-py/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["life*"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/markdown"}
+version = {attr = "life.__version__"}
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "B", "I"]

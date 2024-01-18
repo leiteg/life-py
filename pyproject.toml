@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "mypy", "pre-commit"]
+dev = ["ruff", "pytest", "mypy", "pre-commit", "icecream"]
 doc = ["sphinx", "sphinx-book-theme"]
 
 [project.scripts]

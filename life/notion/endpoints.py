@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from pydantic import TypeAdapter
+from rich.pretty import pretty_repr
 
 from . import Client
 from .filters import Assign, AssignList, Filter, Sort, SortList
@@ -94,16 +95,21 @@ class DatabaseEndpoint(Endpoint):
     def query(
         self, filter: Filter | None = None, sorts: list[Sort] | None = None
     ) -> QueryResult[Page]:
-        data = {}
+        request = {}
 
         if filter is not None:
-            data["filter"] = filter.model_dump(mode="json")
+            request["filter"] = filter.model_dump(mode="json")
 
         if sorts is not None:
-            data["sorts"] = SortList(sorts).model_dump(mode="json")
+            request["sorts"] = SortList(sorts).model_dump(mode="json")
 
-        response = self.client.databases.query(database_id=self.id, **data)
-        log.debug(f"Query Result: {response}")
+        log.debug(f"[QUERY @ {self.id}] REQUEST:")
+        log.debug(f"{pretty_repr(request)}")
+
+        response = self.client.databases.query(database_id=self.id, **request)
+
+        log.debug(f"[QUERY @ {self.id}] RESPONSE:")
+        log.debug(f"{pretty_repr(response)}")
 
         return QueryResult.parse(response)
 
@@ -126,23 +132,30 @@ class DatabaseEndpoint(Endpoint):
         properties = AssignList(root=properties).model_dump(mode="json")
         children = InnerBlockList(root=children).model_dump(mode="json")
 
-        data = {
+        request = {
             "parent": {"database_id": self.id},
             "properties": properties,
             "children": children,
         }
 
         if icon is not None:
-            data["icon"] = icon.model_dump(mode="json")
+            request["icon"] = icon.model_dump(mode="json")
         elif self.default_icon is not None:
-            data["icon"] = bb.external_file(self.default_icon).model_dump(mode="json")
+            request["icon"] = bb.external_file(self.default_icon).model_dump(
+                mode="json"
+            )
 
         if cover is not None:
-            data["cover"] = cover.model_dump(mode="json")
+            request["cover"] = cover.model_dump(mode="json")
 
-        response = self.client.pages.create(**data)
+        log.debug(f"[CREATE @ {self.id}] REQUEST:")
+        log.debug(f"{pretty_repr(request)}")
 
-        log.debug(f"Create result: {response}")
+        response = self.client.pages.create(**request)
+
+        log.debug(f"[CREATE @ {self.id}] RESPONSE:")
+        log.debug(f"{pretty_repr(response)}")
+
         return Page.parse(response)
 
     def update(
@@ -158,10 +171,15 @@ class DatabaseEndpoint(Endpoint):
 
         properties = AssignList(root=properties).model_dump(mode="json")
 
+        log.debug(f"[UPDATE @ {self.id}] PROPERTIES:")
+        log.debug(f"{pretty_repr(properties)}")
+
         response = self.client.pages.update(
             page_id=page_id,
             properties=properties,
         )
 
-        log.debug(f"Update result: {response}")
+        log.debug(f"[UPDATE @ {self.id}] RESPONSE:")
+        log.debug(f"{pretty_repr(response)}")
+
         return Page.parse(response)

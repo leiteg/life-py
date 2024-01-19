@@ -48,7 +48,7 @@ def habit_show(
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Fetching daily"):
         daily = app.db.daily.delta(days=days)
 
         if daily is None:
@@ -82,7 +82,7 @@ def habit_mark(
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Fetching daily"):
         today = app.db.daily.today()
         habits = today.checkboxes()
 
@@ -94,7 +94,7 @@ def habit_mark(
         assert isinstance(choice, str)
         name = choice
 
-    with app.working():
+    with app.working("Updating habits"):
         app.db.daily.update(
             page_id=today.id,
             properties=[

@@ -17,15 +17,18 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
+from typing import Annotated, Optional
 
 from rich import box
+from rich.prompt import Confirm, FloatPrompt, Prompt
 from rich.table import Table
-from typer import Context, Typer
+from typer import Context, Option, Typer
 
 from life.app import App
-from life.notion.filters import Date
+from life.notion.filters import Date, Number, Relation, Title
+from life.util import dictfzf
 
 # ==============================================================================
 # GLOBAL
@@ -99,8 +102,56 @@ def transaction_view(ctx: Context, period: Period = Period.month):
 @cli.command("add")
 def transaction_add(
     ctx: Context,
-):  # fmt: skip
+    name: Annotated[Optional[str], Option("--name", "-n")] = None,
+    value: Annotated[Optional[float], Option("--value", "-v")] = None,
+    when: Annotated[Optional[datetime], Option("--date", "-d")] = None,
+    source: Annotated[Optional[str], Option("--src", "-s")] = None,
+    destination: Annotated[Optional[str], Option("--dst", "-t")] = None,
+    confirm: Annotated[bool, Option("--confirm/--no-confirm")] = True,
+):
     """
     Add a new transaction.
     """
-    raise NotImplementedError()
+    app: App = ctx.obj
+
+    with app.working("Fetching accounts"):
+        accounts = app.db.accounts.query().by_name()
+
+    if name is None:
+        name = Prompt.ask("> Name of the transaction")
+
+    if value is None:
+        value = FloatPrompt.ask("> Value of the transaction")
+
+    if source is None:
+        src_page = dictfzf(accounts, prompt="> Select source account: ")
+        if src_page is None:
+            app.error("No source account selected").exit(1)
+    else:
+        raise NotImplementedError()
+
+    if destination is None:
+        dst_page = dictfzf(accounts, prompt="> Select source account: ")
+        if dst_page is None:
+            app.error("No destination account selected").exit(1)
+    else:
+        raise NotImplementedError()
+
+    if when is None:
+        when = datetime.today()
+
+    if confirm and not Confirm.ask("> Create transaction?", default=False):
+        app.error("Aborted!").exit(0)
+
+    with app.working("Creating transaction"):
+        app.db.transactions.create(
+            properties=[
+                Title().assign(name),
+                Number("Value").assign(value),
+                Relation("Source").assign(src_page.id),
+                Relation("Destination").assign(dst_page.id),
+                Date().assign(when),
+            ]
+        )
+
+    app.success()

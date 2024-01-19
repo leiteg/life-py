@@ -25,7 +25,7 @@ from typer import Argument, Context, Option, Typer
 
 from life.app import App
 from life.notion.filters import Checkbox
-from life.util import iterfzf
+from life.util import multifzf
 
 # ==============================================================================
 # GLOBAL
@@ -74,7 +74,7 @@ def habit_show(
 @cli.command("mark")
 def habit_mark(
     ctx: Context,
-    name: Annotated[Optional[str], Argument()] = None,
+    name: Annotated[Optional[list[str]], Argument()] = None,
     check: Annotated[bool, Option("--check/--uncheck", "-c/-C")] = True,
 ):
     """
@@ -86,20 +86,17 @@ def habit_mark(
         today = app.db.daily.today()
         habits = today.checkboxes()
 
-    if name is None:
-        choice = iterfzf(habits.keys(), prompt="> Select habit: ")
-        if choice is None:
-            app.log.error("No habit selected.")
-            raise SystemExit(1)
-        assert isinstance(choice, str)
-        name = choice
+    if name is not None:
+        selected = name
+    else:
+        selected = multifzf(habits.keys(), prompt="> Select habits: ")
+        if selected is None:
+            app.error("No habit selected.").exit(1)
 
     with app.working("Updating habits"):
         app.db.daily.update(
             page_id=today.id,
-            properties=[
-                Checkbox(name).assign(checked=check),
-            ],
+            properties=[Checkbox(habit).assign(checked=check) for habit in selected],
         )
 
     app.success()

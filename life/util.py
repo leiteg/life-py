@@ -17,9 +17,9 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from collections.abc import Iterable, Mapping
 from typing import TypeVar
 
-# re-export
 from iterfzf import iterfzf as _iterfzf
 
 # ==============================================================================
@@ -29,15 +29,15 @@ from iterfzf import iterfzf as _iterfzf
 T = TypeVar("T")
 
 
-def dictfzf(mapping: dict[str, T], *args, **kwargs) -> T | None:
-    choice = _iterfzf(mapping.keys(), *args, **kwargs)
+def dictfzf(mapping: Mapping[str, T], **kwargs) -> T | None:
+    choice = _iterfzf(mapping.keys(), **kwargs)
     if choice is None:
         return None
-    assert isinstance(choice, str)
+    assert isinstance(choice, str) and choice in mapping
     return mapping[choice]
 
 
-def iterfzf(*args, **kwargs) -> str:
-    choice = _iterfzf(*args, **kwargs)
+def iterfzf(iterable: Iterable[str], **kwargs) -> str:
+    choice = _iterfzf(iterable, **kwargs)
     assert isinstance(choice, str)
     return choice

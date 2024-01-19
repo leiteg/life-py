@@ -39,7 +39,7 @@ cli = Typer()
 
 
 @cli.command("start")
-def session_start(ctx: Context):
+def session_start(ctx: Context, confirm: bool = True):
     """
     Start a new session.
     """
@@ -62,6 +62,9 @@ def session_start(ctx: Context):
     if task is None:
         app.error("No task selected.")
         raise SystemExit(1)
+
+    if confirm and not Confirm.ask("Create session?", default=False):
+        app.error("Aborted.").exit(0)
 
     with app.working("Creating session"):
         app.db.sessions.create(

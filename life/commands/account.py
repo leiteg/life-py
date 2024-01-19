@@ -19,6 +19,8 @@
 
 from typing import Annotated
 
+from rich import box
+from rich.table import Table
 from typer import Context, Option, Typer, launch
 
 from life.app import App
@@ -58,11 +60,32 @@ def account_open(ctx: Context, all: Annotated[bool, Option("--all", "-a")] = Fal
 
 
 @cli.command("view")
-def account_view(
-    ctx: Context,
-    all: Annotated[bool, Option("--all", "-a")] = False
-):  # fmt: skip
+def account_view(ctx: Context, all: Annotated[bool, Option("--all", "-a")] = False):
     """
     View a summary of accounts on the terminal.
     """
-    raise NotImplementedError()
+    app: App = ctx.obj
+
+    filter = Checkbox("Hidden").unchecked()
+    if not all:
+        filter &= Select("Type").equals("Credit")
+
+    with app.working("Fetching accounts"):
+        accounts = app.db.accounts.query(filter).by_name()
+
+    table = Table("Account", "Balance", box=box.HORIZONTALS)
+
+    for name, account in accounts.items():
+        balance = account.formula("Balance").as_number()
+        if balance is None:
+            balance = 0.0
+        if balance > 0:
+            balance_str = f"[green]{balance:10.2f}[/]"
+        elif balance < 0:
+            balance_str = f"[red]{balance:10.2f}[/]"
+        else:
+            balance_str = f"{balance:10.2f}"
+        name_str = f"[i]{name}[/]"
+        table.add_row(name_str, balance_str)
+
+    app.console.print(table)

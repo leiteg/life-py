@@ -149,8 +149,11 @@ def session_info(ctx: Context):
             icon = "[green]:heavy_check_mark:[/]"
             duration = session.formula("Duration").as_number()
 
-        total += duration if duration is not None else 0
-        tree.add(f"{icon} [i]{title}[/] / [dim]{duration:3.0f} minutes[/]")
+        assert duration is not None
+        total += duration
+        hours = duration // 60
+        minutes = duration % 60
+        tree.add(f"{icon} [i]{title}[/] / [dim]{hours} hours {minutes} minutes[/]")
 
     hours = total // 60
     minutes = total % 60

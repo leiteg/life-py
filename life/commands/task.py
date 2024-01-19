@@ -47,7 +47,7 @@ def task_open(
     app: App = ctx.obj
 
     tasks = None
-    with app.working():
+    with app.working("Fetching tasks"):
         if all:
             tasks = app.db.tasks.all()
         else:

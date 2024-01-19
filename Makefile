@@ -2,6 +2,9 @@ all: check fix format
 	
 check:
 	@ruff check
+	
+check-all:
+	@ruff check --select ALL
 
 fix:
 	@ruff check --fix

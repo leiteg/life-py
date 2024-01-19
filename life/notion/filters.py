@@ -23,6 +23,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Literal
 from uuid import UUID
 
+from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel, RootModel, model_serializer
 
 # ==============================================================================
@@ -140,6 +141,18 @@ class Date(Property):
 
     def this_week(self) -> Filter:
         return self._matches(ThisWeek())
+
+    def this_month(self) -> Filter:
+        today = date.today()
+        first = today + relativedelta(day=1)
+        last = today + relativedelta(day=31)
+        return (self >= first) & (self <= last)
+
+    def this_year(self) -> Filter:
+        today = date.today()
+        first = today + relativedelta(day=1, month=1)
+        last = today + relativedelta(day=31, month=12)
+        return (self >= first) & (self <= last)
 
     def today(self) -> Filter:
         return self._matches(Equals(value=date.today()))

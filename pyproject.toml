@@ -18,6 +18,7 @@ dependencies = [
     "notion_client",
     "pydantic[email]",
     "iterfzf",
+    "python-dateutil",
 ]
 
 [project.optional-dependencies]

@@ -46,7 +46,7 @@ def session_start(ctx: Context):
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Fetching sessions"):
         sessions = app.db.sessions.in_progress()
 
     if len(sessions) > 0:
@@ -55,7 +55,7 @@ def session_start(ctx: Context):
 
     title = Prompt.ask("> Session name", default="Work session")
 
-    with app.working():
+    with app.working("Fetching dailies & tasks"):
         today = app.db.daily.today()
         tasks = app.db.tasks.not_done()
 
@@ -64,7 +64,7 @@ def session_start(ctx: Context):
         app.error("No task selected.")
         raise SystemExit(1)
 
-    with app.working():
+    with app.working("Creating session"):
         app.db.sessions.create(
             properties=[
                 Title().assign(title),
@@ -86,7 +86,7 @@ def session_end(ctx: Context):
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Fetching sessions"):
         sessions = app.db.sessions.in_progress()
 
     if len(sessions) == 0:
@@ -100,7 +100,7 @@ def session_end(ctx: Context):
     else:
         session = next(iter(sessions.values()))
 
-    with app.working():
+    with app.working("Updating session"):
         session = app.db.sessions.update(
             page_id=session.id, properties=[Status().assign("Done")]
         )
@@ -123,7 +123,7 @@ def session_info(ctx: Context):
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Fetching sessions"):
         sessions = app.db.sessions.today()
 
     tree = Tree("[i]Today[/]")

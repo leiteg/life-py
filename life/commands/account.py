@@ -19,7 +19,11 @@
 
 from typing import Annotated
 
-from typer import Context, Option, Typer
+from typer import Context, Option, Typer, launch
+
+from life.app import App
+from life.notion.filters import Checkbox, Select
+from life.util import dictfzf
 
 # ==============================================================================
 # GLOBAL
@@ -33,14 +37,24 @@ cli = Typer()
 
 
 @cli.command("open")
-def account_open(
-    ctx: Context,
-    all: Annotated[bool, Option("--all", "-a")] = False
-):  # fmt: skip
+def account_open(ctx: Context, all: Annotated[bool, Option("--all", "-a")] = False):
     """
     Open an account on the browser.
     """
-    raise NotImplementedError()
+    app: App = ctx.obj
+
+    filter = Checkbox("Hidden").unchecked()
+    if not all:
+        filter &= Select("Type").equals("Credit")
+
+    with app.working("Fetching accounts"):
+        accounts = app.db.accounts.query(filter).by_name()
+
+    account = dictfzf(accounts, prompt="> Select the account: ")
+    if account is None:
+        app.error("No account selected.").exit(1)
+
+    launch(account.get_url())
 
 
 @cli.command("view")

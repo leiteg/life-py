@@ -44,7 +44,7 @@ def area_open(
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Fetching areas"):
         areas = app.db.areas.query().by_name()
 
     area = dictfzf(areas, prompt="> Select area: ")

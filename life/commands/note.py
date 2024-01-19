@@ -53,7 +53,7 @@ def note_open(
     if kind is not None:
         filter = Select("Type").equals(kind)
 
-    with app.working():
+    with app.working("Fetching notes"):
         notes = app.db.notes.query(filter).by_name()
 
     note = dictfzf(notes, prompt="> Select the note: ")
@@ -110,7 +110,7 @@ def note_new(
         app.error("No type selected.").exit(1)
 
     # Create note
-    with app.working():
+    with app.working("Creating note"):
         app.db.notes.create(
             properties=[
                 Title().assign(title),

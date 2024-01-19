@@ -41,3 +41,9 @@ def iterfzf(iterable: Iterable[str], **kwargs) -> str:
     choice = _iterfzf(iterable, **kwargs)
     assert isinstance(choice, str)
     return choice
+
+
+def multifzf(iterable: Iterable[str], **kwargs) -> list[str]:
+    choices = _iterfzf(iterable, multi=True, **kwargs)
+    assert isinstance(choices, list) and all(isinstance(item, str) for item in choices)
+    return choices

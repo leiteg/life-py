@@ -200,5 +200,5 @@ class App:
         print(f" [green]:heavy_check_mark:[/] {message}")
         return self
 
-    def working(self) -> Status:
-        return self.console.status("Working")
+    def working(self, message: str = "Working", **kwargs) -> Status:
+        return self.console.status(message, **kwargs)

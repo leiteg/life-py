@@ -17,12 +17,11 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import webbrowser
 from datetime import datetime, timezone
 
 from rich.prompt import Confirm, Prompt
 from rich.tree import Tree
-from typer import Context, Typer
+from typer import Context, Typer, launch
 
 from life.app import App
 from life.notion.filters import Relation, Status, Title
@@ -74,7 +73,7 @@ def session_start(ctx: Context):
             ],
         )
 
-        webbrowser.open(task.get_url())
+        launch(task.get_url())
 
     app.success()
 

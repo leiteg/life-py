@@ -17,9 +17,7 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import webbrowser
-
-from typer import Context, Typer
+from typer import Context, Typer, launch
 
 from life.app import App
 from life.util import dictfzf
@@ -51,5 +49,5 @@ def area_open(
     if area is None:
         app.error("No area selected.").exit(1)
 
-    webbrowser.open(area.get_url())
+    launch(area.get_url())
     app.success()

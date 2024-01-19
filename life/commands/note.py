@@ -17,11 +17,10 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import webbrowser
 from typing import Annotated, Optional
 
 from click import edit
-from typer import Context, Option, Typer
+from typer import Context, Option, Typer, launch
 
 from life.app import App
 from life.notion.filters import Relation, Select, Title
@@ -61,7 +60,7 @@ def note_open(
     if note is None:
         app.error("No note selected.").exit(1)
 
-    webbrowser.open(note.get_url())
+    launch(note.get_url())
     app.success()
 
 

@@ -17,10 +17,9 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import webbrowser
 from typing import Annotated
 
-from typer import Context, Option, Typer
+from typer import Context, Option, Typer, launch
 
 from life.app import App
 from life.util import dictfzf
@@ -57,8 +56,7 @@ def task_open(
     if task is None:
         app.error("No task selected.")
 
-    webbrowser.open(task.get_url())
-
+    launch(task.get_url())
     app.success()
 
 

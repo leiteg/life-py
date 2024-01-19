@@ -150,7 +150,7 @@ class EmptyObject(BaseModel):
 
 
 class IdentifierObject(BaseModel):
-    id: str
+    id: UUID4
 
 
 class NumberObject(BaseModel):

@@ -75,12 +75,14 @@ def session_start(ctx: Context, confirm: bool = True):
         app.error("Aborted.").exit(0)
 
     with app.working("Creating session"):
-        app.db.sessions.create(
+        session = app.db.sessions.create(
             properties=properties,
         )
 
     if task is not None:
         launch(task.get_url())
+    else:
+        launch(session.get_url())
 
     app.success()
 

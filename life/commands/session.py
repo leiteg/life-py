@@ -59,23 +59,27 @@ def session_start(ctx: Context, confirm: bool = True):
         tasks = app.db.tasks.not_done()
 
     task = dictfzf(tasks, prompt="> Select the task: ")
-    if task is None:
-        app.error("No task selected.")
-        raise SystemExit(1)
+
+    properties = [
+        Title().assign(title),
+        Status().assign("In progress"),
+        Relation("Daily").assign(today.id),
+    ]
+
+    if task is not None:
+        properties += [
+            Relation("Task").assign(task.id),
+        ]
 
     if confirm and not Confirm.ask("Create session?", default=False):
         app.error("Aborted.").exit(0)
 
     with app.working("Creating session"):
         app.db.sessions.create(
-            properties=[
-                Title().assign(title),
-                Status().assign("In progress"),
-                Relation("Daily").assign(today.id),
-                Relation("Task").assign(task.id),
-            ],
+            properties=properties,
         )
 
+    if task is not None:
         launch(task.get_url())
 
     app.success()

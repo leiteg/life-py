@@ -41,7 +41,7 @@ def todo_today(ctx: Context, what: list[str]):
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Adding to-do item"):
         app.block.today.after(children=[bb.todo(" ".join(what))])
 
     app.success()
@@ -54,7 +54,7 @@ def todo_tomorrow(ctx: Context, what: list[str]):
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Adding to-do item"):
         app.block.tomorrow.after(children=[bb.todo(" ".join(what))])
 
     app.success()
@@ -67,7 +67,7 @@ def todo_later(ctx: Context, what: list[str]):
     """
     app: App = ctx.obj
 
-    with app.working():
+    with app.working("Adding to-do item"):
         app.block.later.after(children=[bb.todo(" ".join(what))])
 
     app.success()

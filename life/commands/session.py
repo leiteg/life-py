@@ -54,8 +54,10 @@ def session_start(ctx: Context, confirm: bool = True):
 
     title = Prompt.ask("> Session name", default="Work session")
 
-    with app.working("Fetching dailies & tasks"):
+    with app.working("Fetching dailies"):
         today = app.db.daily.today()
+
+    with app.working("Fetching tasks"):
         tasks = app.db.tasks.not_done()
 
     task = dictfzf(tasks, prompt="> Select the task: ")

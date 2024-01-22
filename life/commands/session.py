@@ -120,15 +120,15 @@ def session_end(ctx: Context):
             page_id=session.id, properties=[Status().assign("Done")]
         )
 
-        title = session.title().plain_text()
-        duration = session.formula("Duration").as_number()
-        total = app.db.daily.today().rollup("Time Working").as_number()
+    title = session.title().plain_text()
+    duration = session.formula("Duration").as_number()
+    total = app.db.daily.today().rollup("Time Working").as_number()
 
-        tree = Tree("[green]:heavy_check_mark:[/] DONE!")
-        tree.add(f"Session {title!r} took {duration} minutes.")
-        tree.add(f"You have worked {total} minutes so far today.")
+    tree = Tree("[green]:heavy_check_mark:[/] DONE!")
+    tree.add(f"Session {title!r} took {duration} minutes.")
+    tree.add(f"You have worked {total} minutes so far today.")
 
-    app.success()
+    app.console.print(tree)
 
 
 @cli.command("info")

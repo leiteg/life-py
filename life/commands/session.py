@@ -81,6 +81,11 @@ def session_start(ctx: Context, confirm: bool = True):
             properties=properties,
         )
 
+    if task is not None and task.status().not_started():
+        app.db.tasks.update(
+            page_id=task.id, properties=[Status().assign("In progress")]
+        )
+
     if task is not None:
         launch(task.get_url())
     else:

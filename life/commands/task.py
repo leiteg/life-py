@@ -54,7 +54,7 @@ def task_open(
 
     task = dictfzf(tasks, prompt="> Select the task: ")
     if task is None:
-        app.error("No task selected.")
+        app.error("No task selected.").exit(1)
 
     launch(task.get_url())
     app.success()

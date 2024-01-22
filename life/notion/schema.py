@@ -1231,6 +1231,15 @@ class StatusValue(BaseModel):
     def name(self) -> str:
         return self.status.name
 
+    def not_started(self) -> bool:
+        return self.status.name == "Not started"
+
+    def in_progress(self) -> bool:
+        return self.status.name == "In progress"
+
+    def done(self) -> bool:
+        return self.status.name == "Done"
+
 
 class TitleValue(BaseModel):
     type: Literal["title"] = Field(repr=False)

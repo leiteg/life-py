@@ -18,10 +18,11 @@
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from datetime import datetime, timezone
+from typing import Annotated
 
 from rich.prompt import Confirm, Prompt
 from rich.tree import Tree
-from typer import Context, Typer, launch
+from typer import Argument, Context, Typer, launch
 
 from life.app import App
 from life.notion.filters import Relation, Status, Title
@@ -39,7 +40,11 @@ cli = Typer()
 
 
 @cli.command("start")
-def session_start(ctx: Context, confirm: bool = True):
+def session_start(
+    ctx: Context,
+    name: Annotated[list[str], Argument()],
+    confirm: bool = True,
+):
     """
     Start a new session.
     """
@@ -52,7 +57,10 @@ def session_start(ctx: Context, confirm: bool = True):
         if not Confirm.ask("There is a session in-progress, continue?"):
             raise SystemExit(0)
 
-    title = Prompt.ask("> Session name", default="Work session")
+    if name is None:
+        title = Prompt.ask("> Session name", default="Work session")
+    else:
+        title = " ".join(name)
 
     with app.working("Fetching dailies"):
         today = app.db.daily.today()

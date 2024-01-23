@@ -27,7 +27,7 @@ from rich.logging import RichHandler
 # CONSTANTS
 # ==============================================================================
 
-LOGLEVEL = os.environ.get("LOGLEVEL", "WARN").upper()
+LOGLEVEL = os.environ.get("LIFE_LOG", "WARN").upper()
 FORMAT = "%(message)s"
 
 # ==============================================================================

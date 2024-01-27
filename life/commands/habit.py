@@ -86,7 +86,7 @@ def habit_mark(
         today = app.db.daily.today()
         habits = today.checkboxes()
 
-    if name is not None:
+    if name is not None and len(name) > 0:
         selected = name
     else:
         selected = multifzf(habits.keys(), prompt="> Select habits: ")

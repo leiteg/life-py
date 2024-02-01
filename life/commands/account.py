@@ -88,4 +88,5 @@ def account_view(ctx: Context, all: Annotated[bool, Option("--all", "-a")] = Fal
         name_str = f"[i]{name}[/]"
         table.add_row(name_str, balance_str)
 
-    app.console.print(table)
+    with app.console.pager(styles=True):
+        app.console.print(table)

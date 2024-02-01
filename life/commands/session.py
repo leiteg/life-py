@@ -168,10 +168,12 @@ def session_info(ctx: Context):
         total += duration
         hours = duration // 60
         minutes = duration % 60
-        tree.add(f"{icon} [i]{title}[/] / [dim]{hours} hours {minutes} minutes[/]")
+        tree.add(
+            f"{icon} [i]{title}[/] / [dim]{hours:.0f} hours {minutes:.0f} minutes[/]"
+        )
 
     hours = total // 60
     minutes = total % 60
 
-    tree.label = f"[i]Today[/] / [dim]{hours} hours {minutes} minutes[/]"
+    tree.label = f"[i]Today[/] / [dim]{hours:.0f} hours {minutes:.0f} minutes[/]"
     app.console.print(tree)

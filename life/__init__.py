@@ -25,4 +25,5 @@ from . import commands as commands
 from . import endpoints as endpoints
 from . import log as log
 from . import notion as notion
+from . import tui as tui
 from . import util as util

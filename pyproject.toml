@@ -19,10 +19,11 @@ dependencies = [
     "pydantic[email]",
     "iterfzf",
     "python-dateutil",
+    "textual",
 ]
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "mypy", "pre-commit", "icecream"]
+dev = ["ruff", "pytest", "mypy", "pre-commit", "icecream", "textual-dev"]
 doc = ["sphinx", "sphinx-book-theme"]
 
 [project.scripts]

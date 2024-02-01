@@ -21,6 +21,7 @@ from typing import Annotated
 
 from typer import Context, Option, Typer
 
+import life
 from life.app import App
 from life.commands import account, area, habit, note, session, task, todo, transaction
 
@@ -44,7 +45,7 @@ cli.add_typer(todo.cli, name="todo", help="Manage to-do items.")
 # ==============================================================================
 
 
-@cli.callback()
+@cli.callback(invoke_without_command=True)
 def main_callback(
     ctx: Context,
     verbose: Annotated[int, Option("--verbose", "-v", count=True)] = 0,
@@ -53,6 +54,8 @@ def main_callback(
     Life, Notion dashboard integration from the command-line!
     """
     ctx.obj = App(verbosity=verbose)
+    if ctx.invoked_subcommand is None:
+        life.tui.main()
 
 
 # ==============================================================================

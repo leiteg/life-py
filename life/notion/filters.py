@@ -300,7 +300,7 @@ class URL(Property):
 
 
 class UniqueID(Property):
-    def __init__(self, name) -> None:
+    def __init__(self, name: str = "ID") -> None:
         super().__init__(name=name, kind="unique_id")
 
 

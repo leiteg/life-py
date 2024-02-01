@@ -1334,6 +1334,9 @@ class Page(BaseModel):
     url: HttpUrl
     public_url: HttpUrl | None = Field(repr=False)
 
+    def __hash__(self):
+        return hash(self.id)
+
     @staticmethod
     def parse(obj) -> Page:
         return TypeAdapter(Page).validate_python(obj)

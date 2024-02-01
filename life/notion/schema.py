@@ -1191,7 +1191,14 @@ class RichTextValue(BaseModel):
         return self.rich_text
 
     def plain_text(self) -> str:
-        return "".join(fragment.plain_text for fragment in self.rich_text)
+        if len(self.rich_text.root) == 0:
+            return ""
+        return "".join(
+            fragment.plain_text
+            for fragment in self.rich_text.root
+            if not isinstance(fragment, SimpleTextFragmentObject)
+            and fragment.plain_text is not None
+        )
 
 
 class RollupValue(BaseModel):

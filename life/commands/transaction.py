@@ -17,6 +17,7 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import functools
 from datetime import date, datetime
 from enum import Enum
 from typing import Annotated, Optional
@@ -27,7 +28,8 @@ from rich.table import Table
 from typer import Context, Option, Typer
 
 from life.app import App
-from life.notion.filters import Date, Number, Relation, Title
+from life.notion.filters import Date, Number, Relation, Title, UniqueID
+from life.notion.schema import Page
 from life.util import dictfzf
 
 # ==============================================================================
@@ -35,6 +37,32 @@ from life.util import dictfzf
 # ==============================================================================
 
 cli = Typer()
+
+# ==============================================================================
+# HELPERS
+# ==============================================================================
+
+
+@functools.cache
+def _acc_color(page: Page) -> str:
+    select = page.select("Type").value()
+    color = "default"
+    if select is not None:
+        match select.name:
+            case "Credit":
+                color = "green"
+            case "Debit":
+                color = "red"
+    return color
+
+
+@functools.cache
+def _acc_name(page: Page) -> str:
+    alias = page.text("Alias").plain_text()
+    if len(alias) == 0:
+        return page.name()
+    return alias
+
 
 # ==============================================================================
 # TYPES
@@ -72,8 +100,10 @@ def transaction_view(ctx: Context, period: Period = Period.month):
         case Period.future:
             filter = Date().after(date.today())
 
+    sort = [Date().sort("ascending"), UniqueID().sort("ascending")]
+
     with app.working("Fetching transactions"):
-        transactions = app.db.transactions.query(filter).by_id()
+        transactions = app.db.transactions.query(filter, sort).by_id()
 
     if len(transactions) == 0:
         app.error("No transactions in the selected period.").exit(0)
@@ -81,22 +111,41 @@ def transaction_view(ctx: Context, period: Period = Period.month):
     with app.working("Fetching accounts"):
         accounts = app.db.accounts.query().by_id()
 
-    table = Table("Date", "Name", "Value", "Source", "Destination", box=box.HORIZONTALS)
+    table = Table("Day", "Name", "Value", "Source", "Destination", box=box.HORIZONTALS)
 
     for _, trn in transactions.items():
+        # Retrieve properties
         name = trn.name()
         when = trn.date().start()
         cash = trn.number("Value").value()
         src = trn.relation("Source").value()
         dst = trn.relation("Destination").value()
-        assert when is not None
-        when = when.strftime("%Y-%m-%d")
-        cash = f"R$ {cash:10.2f}"
-        src = accounts[src[0].id].name()
-        dst = accounts[dst[0].id].name()
-        table.add_row(when, name, cash, src, dst)
 
-    app.console.print(table)
+        assert len(src) == 1
+        assert len(dst) == 1
+
+        src = accounts[src.pop().id]
+        dst = accounts[dst.pop().id]
+
+        # Format properties
+        src_color = _acc_color(src)
+        dst_color = _acc_color(dst)
+        src_name = _acc_name(src)
+        dst_name = _acc_name(dst)
+
+        title = f"[i]{name}[/i]"
+        if when is not None:
+            when = f"[dim]{when.strftime('%b %d')}[/dim]"
+        else:
+            when = ""
+        cash = f"R$ {cash:10.2f}"
+        src_name = f"[{src_color}]{src_name}[/]"
+        dst_name = f"[{dst_color}]{dst_name}[/]"
+
+        table.add_row(when, title, cash, src_name, dst_name)
+
+    with app.console.pager(styles=True):
+        app.console.print(table)
 
 
 @cli.command("add")

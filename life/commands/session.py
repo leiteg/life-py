@@ -130,11 +130,14 @@ def session_end(ctx: Context):
 
     title = session.title().plain_text()
     duration = session.formula("Duration").as_number()
-    total = app.db.daily.today().rollup("Time Working").as_number()
+    total = app.db.daily.today().formula("Time Working").as_number()
 
     tree = Tree("[green]:heavy_check_mark:[/] DONE!")
-    tree.add(f"Session {title!r} took {duration} minutes.")
-    tree.add(f"You have worked {total} minutes so far today.")
+    duration_hours = ""
+    if duration is not None and duration > 60:
+        duration_hours = f" ({duration//60} hours {duration%60} minutes)"
+    tree.add(f"Session {title!r} took {duration} minutes{duration_hours}.")
+    tree.add(f"You have worked {total} hours so far today.")
 
     app.console.print(tree)
 

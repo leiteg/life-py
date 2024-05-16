@@ -421,6 +421,11 @@ class DateFormulaObject(BaseModel):
     date: date | datetime | None
 
 
+class ArrayFormulaObject(BaseModel):
+    type: Literal["array"] = Field(repr=False)
+    array: Any  # TODO
+
+
 FormulaObject = Annotated[
     BooleanFormulaObject
     | NumberFormulaObject
@@ -431,7 +436,8 @@ FormulaObject = Annotated[
 
 # TODO: This union is not complete.
 RollupObject = Annotated[
-    DateFormulaObject | NumberFormulaObject, Field(discriminator="type")
+    DateFormulaObject | NumberFormulaObject | ArrayFormulaObject,
+    Field(discriminator="type"),
 ]
 
 

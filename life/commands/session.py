@@ -130,7 +130,7 @@ def session_end(ctx: Context):
 
     title = session.title().plain_text()
     duration = session.formula("Duration").as_number()
-    total = app.db.daily.today().formula("Time Working").as_number()
+    total = app.db.daily.today().formula("Hours Worked").as_number()
 
     tree = Tree("[green]:heavy_check_mark:[/] DONE!")
     duration_hours = ""

@@ -161,6 +161,9 @@ class InternalLinkObject(BaseModel):
     url: HttpUrl
     expiry_time: datetime
 
+    def get_url(self) -> str:
+        return str(self.url)
+
 
 class ExternalLinkObject(BaseModel):
     url: HttpUrl
@@ -1097,6 +1100,10 @@ class FilesValue(BaseModel):
 
     def value(self) -> list[UnnamedFile]:
         return self.files
+
+    def get(self, idx: int = 0) -> UnnamedFile:
+        assert idx >= 0 and idx < len(self.files)
+        return self.files[idx].file
 
 
 class FormulaValue(BaseModel):

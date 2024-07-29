@@ -17,22 +17,12 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from typing import Annotated
 
-from typer import Context, Option, Typer
+from typer import Context, Typer, launch
 
 from life.app import App
-from life.commands import (
-    account,
-    area,
-    habit,
-    note,
-    resources,
-    session,
-    task,
-    todo,
-    transaction,
-)
+from life.notion.filters import Files, Select
+from life.util import dictfzf
 
 # ==============================================================================
 # GLOBALS
@@ -40,40 +30,25 @@ from life.commands import (
 
 cli = Typer()
 
-cli.add_typer(habit.cli, name="habit", help="Manage habits.")
-cli.add_typer(session.cli, name="session", help="Manage sessions.")
-cli.add_typer(task.cli, name="task", help="Manage tasks.")
-cli.add_typer(note.cli, name="note", help="Manage notes.")
-cli.add_typer(area.cli, name="area", help="Manage areas.")
-cli.add_typer(account.cli, name="account", help="Manage accounts.")
-cli.add_typer(transaction.cli, name="transaction", help="Manage transactions.")
-cli.add_typer(todo.cli, name="todo", help="Manage to-do items.")
-cli.add_typer(resources.cli, name="resources", help="Manage resources.")
-
 # ==============================================================================
-# MAIN CALLBACK
+# RESOURCES
 # ==============================================================================
 
 
-@cli.callback()
-def main_callback(
-    ctx: Context,
-    verbose: Annotated[int, Option("--verbose", "-v", count=True)] = 0,
-):
+@cli.command("open")
+def resource_open(ctx: Context):
     """
-    Life, Notion dashboard integration from the command-line!
+    Open a resource from the Resources database.
     """
-    ctx.obj = App(verbosity=verbose)
+    app: App = ctx.obj
 
+    filter = Select("Type").equals("Textbook") & Files("Attachments").not_empty()
+    with app.working("Fetching resources"):
+        results = app.db.resources.query(filter).by_name()
 
-# ==============================================================================
-# MAIN
-# ==============================================================================
+    resource = dictfzf(results, prompt="> Select the resource: ")
+    if resource is None:
+        app.error("No resource selected").exit(1)
 
-
-def main():
-    cli()
-
-
-if __name__ == "__main__":
-    main()
+    file = resource.files("Attachments").get(0)
+    launch(file.get_url())

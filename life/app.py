@@ -141,9 +141,13 @@ class DatabaseEndpoints:
         self.transactions = TransactionsEndpoint(
             client=client, id=str(config.transactions), default_icon=icons.transactions
         )
+        self.resources = ResourcesEndpoint(
+            client=client,
+            id=str(config.resources),
+            default_icon=None,
+        )
         self.plantarium = None
         self.garden = None
-        self.resources = None
 
 
 @dataclass

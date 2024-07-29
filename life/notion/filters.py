@@ -81,11 +81,13 @@ class Checkbox(Property):
 
 
 class CreatedBy(Property):
-    pass  # TODO
+    def __init__(self, name) -> None:
+        raise ValueError("Not supported by the Notion API.")
 
 
 class CreatedTime(Property):
-    pass  # TODO
+    def __init__(self, name) -> None:
+        raise ValueError("Not supported by the Notion API.")
 
 
 class Date(Property):
@@ -162,11 +164,13 @@ class Date(Property):
 
 
 class Email(Property):
-    pass  # TODO
+    def __init__(self, name) -> None:
+        raise ValueError("Not supported by the Notion API.")
 
 
 class Files(Property):
-    pass  # TODO
+    def __init__(self, name="Files") -> None:
+        super().__init__(name=name, kind="files")
 
 
 class Formula(Property):
@@ -174,11 +178,13 @@ class Formula(Property):
 
 
 class LastEditedBy(Property):
-    pass  # TODO
+    def __init__(self, name) -> None:
+        raise ValueError("Not supported by the Notion API.")
 
 
 class LastEditedTime(Property):
-    pass  # TODO
+    def __init__(self, name) -> None:
+        raise ValueError("Not supported by the Notion API.")
 
 
 class MultiSelect(Property):
@@ -226,7 +232,8 @@ class Relation(Property):
 
 
 class Rollup(Property):
-    pass  # TODO
+    def __init__(self, name) -> None:
+        raise ValueError("Not supported by the Notion API.")
 
 
 class RichText(Property):

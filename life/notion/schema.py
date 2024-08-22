@@ -1849,17 +1849,17 @@ class QueryResult(BaseModel, Generic[Result]):
     def __getitem__(self, idx: int) -> Result:
         return self.results[idx]
 
-    def map(self, f: Callable[[Result], T]) -> dict[UUID4, T]:
+    def map_values(self, f: Callable[[Result], T]) -> dict[UUID4, T]:
         return {result.id: f(result) for result in self.results}
 
-    def inverse_map(self, f: Callable[[Result], T]) -> dict[T, Result]:
+    def map_keys(self, f: Callable[[Result], T]) -> dict[T, Result]:
         return {f(result): result for result in self.results}
 
     def by_id(self) -> dict[UUID, Result]:
-        return self.inverse_map(lambda x: x.id)
+        return self.map_keys(lambda x: x.id)
 
     def by_name(self) -> dict[str, Result]:
-        return self.inverse_map(lambda x: x.title().plain_text())  # type: ignore
+        return self.map_keys(lambda x: x.title().plain_text())  # type: ignore
 
     def first(self) -> Result:
         assert len(self.results) >= 1

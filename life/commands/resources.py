@@ -17,11 +17,13 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import re
 
 from typer import Context, Typer, launch
 
 from life.app import App
 from life.notion.filters import Files, Select
+from life.notion.schema import Page
 from life.util import dictfzf
 
 # ==============================================================================
@@ -29,6 +31,21 @@ from life.util import dictfzf
 # ==============================================================================
 
 cli = Typer()
+pattern = re.compile(r"(?:,|;|\band\b)")
+
+# ==============================================================================
+# LOCAL FUNCTIONS
+# ==============================================================================
+
+
+def _format(page: Page) -> str:
+    authors = page.text("Author").plain_text()
+    authors = pattern.split(authors)
+    authors = [author.strip(" .").split()[-1] for author in authors if author != " "]
+    authors = "; ".join(authors)
+    name = page.name()
+    return f"[{authors}] {name}"
+
 
 # ==============================================================================
 # RESOURCES
@@ -44,7 +61,7 @@ def resource_open(ctx: Context):
 
     filter = Select("Type").equals("Textbook") & Files("Attachments").not_empty()
     with app.working("Fetching resources"):
-        results = app.db.resources.query(filter).by_name()
+        results = app.db.resources.query(filter).map_keys(_format)
 
     resource = dictfzf(results, prompt="> Select the resource: ")
     if resource is None:

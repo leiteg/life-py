@@ -60,7 +60,7 @@ def resource_open(ctx: Context, kind: Annotated[str, Argument()] = "Textbook"):
     """
     app: App = ctx.obj
 
-    filter = Select("Type").equals(kind) & Files("Attachments").not_empty()
+    filter = Select("Type").equals(kind.title()) & Files("Attachments").not_empty()
     with app.working("Fetching resources"):
         results = app.db.resources.query(filter).map_keys(_format)
 

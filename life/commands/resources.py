@@ -40,7 +40,7 @@ pattern = re.compile(r"(?:,|;|\band\b)")
 
 
 def _format(page: Page) -> str:
-    authors = page.text("Author").plain_text()
+    authors = page.text("Author").plain_text().removesuffix("et. al.")
     authors = pattern.split(authors)
     authors = [author.strip(" .").split()[-1] for author in authors if author != " "]
     authors = "; ".join(authors)

@@ -24,7 +24,6 @@ from typing import Annotated, Any, Callable, Generic, Literal, TypeVar, Union
 from uuid import UUID
 
 from pydantic import (
-    UUID4,
     BaseModel,
     ConfigDict,
     EmailStr,
@@ -150,7 +149,7 @@ class EmptyObject(BaseModel):
 
 
 class IdentifierObject(BaseModel):
-    id: UUID4
+    id: UUID
 
 
 class NumberObject(BaseModel):
@@ -342,12 +341,12 @@ class RichText(RootModel[list[RichTextFragment]]):
 
 class DatabaseParent(BaseModel):
     type: Literal["database_id"] = Field(repr=False)
-    database_id: UUID4
+    database_id: UUID
 
 
 class PageParent(BaseModel):
     type: Literal["page_id"] = Field(repr=False)
-    page_id: UUID4
+    page_id: UUID
 
 
 class WorkspaceParent(BaseModel):
@@ -357,7 +356,7 @@ class WorkspaceParent(BaseModel):
 
 class BlockParent(BaseModel):
     type: Literal["block_id"] = Field(repr=False)
-    block_id: UUID4
+    block_id: UUID
 
 
 _Parent = Annotated[
@@ -484,7 +483,7 @@ class PartialUser(BaseModel):
 
 class BaseUserModel(BaseModel):
     object: Literal["user"] = Field(repr=False)
-    id: UUID4
+    id: UUID
     name: str | None
     avatar_url: HttpUrl | None
 
@@ -508,7 +507,7 @@ User = Annotated[PersonUser | BotUser, Field(discriminator="type")]
 
 class BaseBlockModel(BaseModel):
     object: Literal["block"] = Field(repr=False)
-    id: UUID4
+    id: UUID
     parent: Parent
     created_time: datetime
     last_edited_time: datetime
@@ -1341,7 +1340,7 @@ PropertyValue = Annotated[
 
 class Page(BaseModel):
     object: Literal["page"] = Field(repr=False)
-    id: UUID4
+    id: UUID
     created_time: datetime = Field(repr=False)
     last_edited_time: datetime = Field(repr=False)
     created_by: PartialUser = Field(repr=False)
@@ -1691,7 +1690,7 @@ DatabaseProperty = Annotated[
 
 class Database(BaseModel):
     object: Literal["database"] = Field(repr=False)
-    id: UUID4
+    id: UUID
     created_time: datetime
     created_by: PartialUser
     last_edited_time: datetime
@@ -1849,7 +1848,7 @@ class QueryResult(BaseModel, Generic[Result]):
     def __getitem__(self, idx: int) -> Result:
         return self.results[idx]
 
-    def map_values(self, f: Callable[[Result], T]) -> dict[UUID4, T]:
+    def map_values(self, f: Callable[[Result], T]) -> dict[UUID, T]:
         return {result.id: f(result) for result in self.results}
 
     def map_keys(self, f: Callable[[Result], T]) -> dict[T, Result]:

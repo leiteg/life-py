@@ -57,7 +57,7 @@ def session_start(
         if not Confirm.ask("There is a session in-progress, continue?"):
             raise SystemExit(0)
 
-    if name is None:
+    if len(name) == 0:
         title = Prompt.ask("> Session name", default="Work session")
     else:
         title = " ".join(name)
@@ -67,6 +67,9 @@ def session_start(
 
     with app.working("Fetching tasks"):
         tasks = app.db.tasks.not_done()
+
+    if len(tasks) == 0:
+        app.success("All tasks are completed.").exit(0)
 
     task = dictfzf(tasks, prompt="> Select the task: ")
 

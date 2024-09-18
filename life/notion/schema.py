@@ -167,6 +167,9 @@ class InternalLinkObject(BaseModel):
 class ExternalLinkObject(BaseModel):
     url: HttpUrl
 
+    def get_url(self) -> str:
+        return str(self.url)
+
 
 class DateObject(BaseModel):
     start: date | datetime
@@ -198,10 +201,16 @@ class ExternalUnnamedFile(BaseModel):
     type: Literal["external"] = Field(default="external", repr=False)
     external: ExternalLinkObject
 
+    def get_url(self) -> str:
+        return self.external.get_url()
+
 
 class InternalUnnamedFile(BaseModel):
     type: Literal["file"] = Field(default="file", repr=False)
     file: InternalLinkObject
+
+    def get_url(self) -> str:
+        return self.file.get_url()
 
 
 UnnamedFile = Annotated[

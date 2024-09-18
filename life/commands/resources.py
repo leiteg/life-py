@@ -67,5 +67,5 @@ def resource_open(ctx: Context):
     if resource is None:
         app.error("No resource selected").exit(1)
 
-    file = resource.files("Attachments").get(0)
-    launch(file.get_url())
+    if file := resource.files("Attachments").get(0):
+        launch(file.get_url())

@@ -1109,9 +1109,10 @@ class FilesValue(BaseModel):
     def value(self) -> list[UnnamedFile]:
         return self.files
 
-    def get(self, idx: int = 0) -> UnnamedFile:
-        assert idx >= 0 and idx < len(self.files)
-        return self.files[idx].file
+    def get(self, idx: int = 0) -> UnnamedFile | None:
+        if idx >= len(self.files):
+            return None
+        return self.files[idx]
 
 
 class FormulaValue(BaseModel):

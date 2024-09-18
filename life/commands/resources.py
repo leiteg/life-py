@@ -18,8 +18,9 @@
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import re
+from typing import Annotated
 
-from typer import Context, Typer, launch
+from typer import Argument, Context, Typer, launch
 
 from life.app import App
 from life.notion.filters import Files, Select
@@ -53,13 +54,13 @@ def _format(page: Page) -> str:
 
 
 @cli.command("open")
-def resource_open(ctx: Context):
+def resource_open(ctx: Context, kind: Annotated[str, Argument()] = "Textbook"):
     """
     Open a resource from the Resources database.
     """
     app: App = ctx.obj
 
-    filter = Select("Type").equals("Textbook") & Files("Attachments").not_empty()
+    filter = Select("Type").equals(kind) & Files("Attachments").not_empty()
     with app.working("Fetching resources"):
         results = app.db.resources.query(filter).map_keys(_format)
 
